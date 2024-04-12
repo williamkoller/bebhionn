@@ -3,9 +3,11 @@ services:
   bebhionn-api:
     build:
       context: .
-      dockerfile: Dockerfile.node
+      dockerfile: Dockerfile
     container_name: bebhionn-api
-    entrypoint: sh -c 'npm i && npm run start:dev'
+    depends_on:
+      - bebhionn-db
+    entrypoint: sh -c 'npm i && npx prisma generate && npm run start:dev'
     volumes:
       - .:/app
       - /app/node_modules
@@ -14,6 +16,24 @@ services:
     networks:
       - bebhionn-network
 
+  bebhionn-db:
+    image: postgres:latest
+    environment:
+      POSTGRES_HOST: ${DB_HOST}
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASS}
+      POSTGRES_DB: ${DB_NAME}
+      PG_DATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - bebhionndata:/var/lib/postgresql/data
+    ports:
+      - ${DB_PORT}:${DB_PORT}
+    networks:
+      - bebhionn-network
+
 networks:
   bebhionn-network:
     driver: bridge
+
+volumes:
+  bebhionndata:
