@@ -1,0 +1,19 @@
+version: '3.8'
+services:
+  bebhionn-api:
+    build:
+      context: .
+      dockerfile: Dockerfile.node
+    container_name: bebhionn-api
+    entrypoint: sh -c 'npm i && npm run start:dev'
+    volumes:
+      - .:/app
+      - /app/node_modules
+    ports:
+      - ${API_PORT}:${API_PORT}
+    networks:
+      - bebhionn-network
+
+networks:
+  bebhionn-network:
+    driver: bridge
