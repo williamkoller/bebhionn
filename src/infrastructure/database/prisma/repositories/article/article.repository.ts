@@ -4,6 +4,7 @@ import {
   AddArticleRepository,
   LoadArticleByFilterRepository,
 } from '@/data/protocols/db/article';
+import { ArticleModel } from '@/domain/models/article/article';
 
 @Injectable()
 export class ArticleRepository
@@ -11,14 +12,19 @@ export class ArticleRepository
 {
   constructor(private readonly prismaInstance: PrismaInstance) {}
 
-  public async add(data: any): Promise<any> {
-    return await this.prismaInstance.article.create({ data });
+  public async add(articleModel: ArticleModel): Promise<ArticleModel> {
+    return await this.prismaInstance.article.create({
+      data: articleModel.props,
+    });
   }
 
-  public async loadByFilter(filter: Record<string, string>): Promise<any> {
+  public async loadByFilter(
+    filter: Record<string, string>,
+    orderBy: Record<string, string>,
+  ): Promise<ArticleModel> {
     return await this.prismaInstance.article.findMany({
       where: filter,
-      orderBy: { id: 'asc' },
+      orderBy,
     });
   }
 }
