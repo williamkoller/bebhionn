@@ -1,3 +1,4 @@
+import { ArticleModel, ArticleProps } from '@/domain/models/article/article';
 import { ArticleRepository } from './article.repository';
 import { PrismaInstance } from '@/infrastructure/database/prisma/config/prisma-instance';
 
@@ -18,13 +19,19 @@ describe('ArticleRepository - Unit Test', () => {
 
   describe('add', () => {
     it('should add a new article', async () => {
-      const articleData = { title: 'Test Article' };
+      const articleProps: ArticleProps = {
+        content: 'Test Content',
+        title: 'Test Article',
+        slug: 'test-article',
+      };
 
-      await articleRepository.add(articleData);
+      const articleModel = new ArticleModel(articleProps);
+
+      await articleRepository.add(articleModel);
 
       expect(prismaInstanceMock.article.create).toHaveBeenCalledTimes(1);
       expect(prismaInstanceMock.article.create).toHaveBeenCalledWith({
-        data: articleData,
+        data: articleModel.props,
       });
     });
   });
@@ -32,13 +39,14 @@ describe('ArticleRepository - Unit Test', () => {
   describe('loadByFilter', () => {
     it('should load articles by filter', async () => {
       const filter = { published: '2022-01-01' };
+      const orderBy = { id: 'asc' };
 
-      await articleRepository.loadByFilter(filter);
+      await articleRepository.loadByFilter(filter, orderBy);
 
       expect(prismaInstanceMock.article.findMany).toHaveBeenCalledTimes(1);
       expect(prismaInstanceMock.article.findMany).toHaveBeenCalledWith({
         where: filter,
-        orderBy: { id: 'asc' },
+        orderBy,
       });
     });
   });
