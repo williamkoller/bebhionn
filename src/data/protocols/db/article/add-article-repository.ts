@@ -1,3 +1,6 @@
+import { ArticleModel } from '@/domain/models/article/article';
+import { Article } from '@prisma/client';
+
 export interface AddArticleRepository {
-  add: (data: any) => Promise<any>;
+  add: (data: ArticleModel) => Promise<Article>;
 }
